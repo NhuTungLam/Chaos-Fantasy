@@ -13,7 +13,7 @@ public class EnemyHandler : MonoBehaviour
 
     public float currentDamage, currentHealth;
     private CircleCollider2D collide;
-    private bool isDead = false; // Trạng thái để kiểm soát khi kẻ địch chết
+    private bool isDead = false;
 
     private GameObject player;
 
@@ -43,14 +43,8 @@ public class EnemyHandler : MonoBehaviour
     void FixedUpdate()
     {
         CheckDeathAnimation();
-        // Only check on Objects layer to reduce the number of unncessary cheks
         LayerMask mask = LayerMask.GetMask("Objects");
-        // Check for nearby colliders within collider radius
         Collider2D[] nearbyObjects = Physics2D.OverlapCircleAll(transform.position, collide.radius, mask);
-
-        // Track processed pairs to avoid redundant checks
-        // HashSet is used instead of List because it avoid duplicates
-        // Which is good because we don't want to add the same pair
         HashSet<(Collider2D, Collider2D)> processedPairs = new HashSet<(Collider2D, Collider2D)>();
 
         foreach (Collider2D obj1 in nearbyObjects)
@@ -73,14 +67,11 @@ public class EnemyHandler : MonoBehaviour
                     continue;
                 }
                 
-                // Skipalready processed pairs
                 if (processedPairs.Contains((obj1, obj2)) || processedPairs.Contains((obj2, obj1)))
                     continue;
 
-                // Add the pair to the processed set
                 processedPairs.Add((obj1, obj2));
 
-                // Resolve overlap between obj1 and obj2
                 HandleOverlap(obj1, obj2);
             }
         }
@@ -110,9 +101,8 @@ public class EnemyHandler : MonoBehaviour
         currentHealth -= dmg;
         movement.Knockback(5f, 0.2f);
 
-        // Tăng bộ đếm và giới hạn âm thanh
         currentHitEnemies++;
-        float volume = Mathf.Clamp(1f / currentHitEnemies, 0.2f, 1f); // Giảm âm lượng khi đánh nhiều kẻ địch
+        float volume = Mathf.Clamp(1f / currentHitEnemies, 0.2f, 1f);
         audioManager.PlaySFX(audioManager.hitenemyMusic, volume);
 
         DamagePopUp.Create(transform.position, dmg);
@@ -121,33 +111,28 @@ public class EnemyHandler : MonoBehaviour
         {
             Die();
         }
-        currentHitEnemies--; // Giảm bộ đếm khi xử lý xong
+        currentHitEnemies--;
     }
 
 
     private void Die()
     {
-        isDead = true; // Đánh dấu kẻ địch đã chết
+        isDead = true;
         currentHealth = 0;
 
-        // Dừng di chuyển
         if (movement != null) movement.enabled = false;
 
-        // Phát hoạt ảnh chết
         if (animator != null)
         {
             animator.SetBool("isDead", true);
         }
         
-        ProjectileCollide.Clear(); // Clear projectile pairs when reset
+        ProjectileCollide.Clear(); 
 
-        // Rớt đồ
         if (drop != null) drop.DropPickUp();
 
-        // Vô hiệu hóa collider
         if (collide != null) collide.enabled = false;
 
-        //Tính số lượng quái giết
         ScoreBoard.Instance.enemyKilled++;
     }
 
@@ -155,7 +140,6 @@ public class EnemyHandler : MonoBehaviour
     {
         if (animator != null)
         {
-            // Kiểm tra nếu hoạt ảnh chết đã hoàn tất
             AnimatorStateInfo stateInfo = animator.GetCurrentAnimatorStateInfo(0);
             if (stateInfo.IsName(enemyData.deathAnimName) && stateInfo.normalizedTime > 1 && !animator.IsInTransition(0)) // Hoạt ảnh "Die" kết thúc
             {
@@ -174,21 +158,18 @@ public class EnemyHandler : MonoBehaviour
 
     void HandleOverlap(Collider2D obj1, Collider2D obj2)
     {
-        // Determine if either object is the player
         bool isPlayer1 = obj1.CompareTag("Player");
         bool isPlayer2 = obj2.CompareTag("Player");
 
         Vector2 direction = (Vector2)(obj1.transform.position - obj2.transform.position);
         float distance = direction.magnitude;
 
-        float combinedRadius = obj1.bounds.extents.x + obj2.bounds.extents.x; // Assuming circular objects
+        float combinedRadius = obj1.bounds.extents.x + obj2.bounds.extents.x;
 
-        // Calculate the overlap amount
         float overlap = combinedRadius - distance;
 
-        if (overlap > 0) // Resolve overlap if necessary
+        if (overlap > 0) 
         {
-            // Split the resolution equally between the two objects
             Vector3 halfOverlap = (overlap / 2) * direction.normalized;
 
             if (!isPlayer1 && !isPlayer2)
@@ -199,13 +180,11 @@ public class EnemyHandler : MonoBehaviour
             else if (isPlayer1)
             {
                 obj1.GetComponent<CharacterHandler>().TakeDamage(currentDamage);
-                // Only move obj2 if obj1 is the player
                 obj2.transform.position -= (Vector3)(overlap * direction.normalized);
             }
             else
             {
                 obj2.GetComponent<CharacterHandler>().TakeDamage(currentDamage);
-                // Only move obj1 if obj2 is the player
                 obj1.transform.position += (Vector3)(overlap * direction.normalized);
             }
         }
@@ -233,18 +212,14 @@ public class EnemyHandler : MonoBehaviour
         isDead = false;
         currentHealth = enemyData.MaxHealth;
         
-        // Resetting enemy's opacity
         Color color = spriteRenderer.color;
-        color = new Color(1, 1, 1); // Fully visible
+        color = new Color(1, 1, 1); 
         spriteRenderer.color = color;
 
-        // Kích hoạt lại collider
         if (collide != null) collide.enabled = true;
 
-        // Kích hoạt lại di chuyển
         if (movement != null) movement.enabled = true;
 
-        // Đặt trạng thái animator về mặc định
         if (animator != null) animator.SetBool("isDead", false);
 
     }

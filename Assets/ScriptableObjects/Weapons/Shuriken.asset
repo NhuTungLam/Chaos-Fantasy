@@ -25,7 +25,7 @@ MonoBehaviour:
   damagePlus: 0
   Descriptions:
   - Rotate around the player
-  - "\u01B0efwe"
-  - "\u01B0efwe"
-  - "\u01B0efwe"
-  - "\u01B0efwe"
+  - Increase shuriken speed move around player
+  - 3 shuriken move around player
+  - Rotate around the player
+  - 4 shuriken move around player

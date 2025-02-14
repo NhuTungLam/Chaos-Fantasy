@@ -14,6 +14,6 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   e_name: FrostGuardian
   deathAnimName: FrostGuardian_die
-  speed: 3
+  speed: 2.7
   maxHealth: 4
   damage: 5

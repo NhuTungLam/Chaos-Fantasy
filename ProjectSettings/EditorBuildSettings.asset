@@ -5,15 +5,6 @@ EditorBuildSettings:
   m_ObjectHideFlags: 0
   serializedVersion: 2
   m_Scenes:
-  - enabled: 0
-    path: Assets/Prefabs/Scenes/Menu.unity
-    guid: 4d3089d4e8857794bbd40e8ba4d1d03f
-  - enabled: 0
-    path: Assets/Prefabs/Scenes/Gameplay.unity
-    guid: 2cda990e2423bbf4892e6590ba056729
-  - enabled: 0
-    path: Assets/Prefabs/Scenes/Character Selection.unity
-    guid: faad3552419c60a44bf37bd4c9fe196d
   - enabled: 1
     path: Assets/Scenes/Menu.unity
     guid: 2ae854520591479409301c0493820c09

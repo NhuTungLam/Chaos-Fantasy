@@ -16,19 +16,16 @@ public class CrystalHammer : Weapon
         switch (currentLevel)
         {
             case 1:
-                StartCoroutine(SpawnImpactsInLine(1.6f, pm.ShootDir,10)); // Sử dụng hướng người chơi
+                StartCoroutine(SpawnImpactsInLine(1.8f, pm.ShootDir,1)); 
                 break;
             case 2:
-                SpawnImpact(1.3f, pm.ShootDir); // Sử dụng hướng người chơi
+                StartCoroutine(SpawnImpactsInLine(1.5f, pm.ShootDir,3));
                 break;
             case 3:
-                StartCoroutine(SpawnImpactsInLine(1.3f, pm.ShootDir)); // Sử dụng hướng người chơi
+                StartCoroutine(SpawnImpactsInLine(1.5f, pm.ShootDir,5));
                 break;
             case 4:
-                StartCoroutine(SpawnImpactsInLine(1.3f, pm.ShootDir)); // Sử dụng hướng người chơi
-                break;
-            case 5:
-                StartCoroutine(SpawnImpactsInLine(1.6f, pm.ShootDir, 5)); // Tăng số lượng đòn đánh lên 5 cho cấp 5
+                StartCoroutine(SpawnImpactsInLine(1.8f, pm.ShootDir, 8)); 
                 break;
         }
     }
@@ -42,19 +39,16 @@ public class CrystalHammer : Weapon
         {
             projectile.CheckDirection(direction);
         }
-
-        // Di chuyển hitbox ra ngoài nhân vật theo hướng đánh
         impact.transform.position = this.transform.position + (Vector3)direction * 0.5f; // Điều chỉnh khoảng cách
     }
 
     // Coroutine để spawn các đòn đánh theo đường thẳng, dựa trên hướng người chơi
-    // Đã thêm tham số `numImpacts` để chỉ định số lượng đòn đánh
     private IEnumerator SpawnImpactsInLine(float size, Vector2 direction, int numImpacts = 4)
     {
-        float distanceBetweenAttacks = 1f; // Khoảng cách giữa các đòn tấn công
+        float distanceBetweenAttacks = 1f; 
         Transform previousImpactTransform = null;
 
-        for (int i = 0; i < numImpacts; i++) // Tạo số lượng đòn đánh tùy thuộc vào `numImpacts`
+        for (int i = 0; i < numImpacts; i++) 
         {
             GameObject impact = Instantiate(weaponData.prefab);
             CrystalHammerProjectile projectile = impact.GetComponent<CrystalHammerProjectile>();
@@ -67,18 +61,14 @@ public class CrystalHammer : Weapon
 
             if (i == 0)
             {
-                // Đòn đầu tiên xuất phát từ vị trí của nhân vật
                 impact.transform.position = this.transform.position + (Vector3)direction * 0.5f;
             }
             else if (previousImpactTransform != null)
             {
-                // Đòn tiếp theo dựa trên vị trí của đòn trước đó
                 impact.transform.position = previousImpactTransform.position + (Vector3)(direction.normalized * distanceBetweenAttacks);
             }
 
             previousImpactTransform = impact.transform;
-
-            // Chờ một khoảng thời gian trước khi tạo đòn tiếp theo
             yield return new WaitForSeconds(0.1f);
         }
     }
